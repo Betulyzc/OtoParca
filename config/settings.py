@@ -27,21 +27,34 @@ SITE_URL = os.getenv(
 )
 
 # ---------------------------------------------------
-# ALLOWED HOSTS
+# ALLOWED HOSTS / CSRF (Render gibi geçici domainlerde çalışsın diye)
 # ---------------------------------------------------
 
-if DEBUG:
-    ALLOWED_HOSTS = []
-else:
-    ALLOWED_HOSTS = [
+# Prod ortamında hangi hostlardan istek kabul edileceği
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+if not DEBUG:
+    # Render / test ortamları için esnek host
+    # (Render URL’in: https://xxx.onrender.com gibi)
+    extra_hosts = os.getenv("ALLOWED_HOSTS", "")
+    if extra_hosts:
+        ALLOWED_HOSTS += [h.strip() for h in extra_hosts.split(",") if h.strip()]
+
+    # Senin gerçek domainlerin
+    ALLOWED_HOSTS += [
         "umayotoyedekparca.com",
         "www.umayotoyedekparca.com",
     ]
 
+    # CSRF trusted origins (admin post işlemleri için şart)
     CSRF_TRUSTED_ORIGINS = [
         "https://umayotoyedekparca.com",
         "https://www.umayotoyedekparca.com",
     ]
+
+    extra_csrf = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+    if extra_csrf:
+        CSRF_TRUSTED_ORIGINS += [o.strip() for o in extra_csrf.split(",") if o.strip()]
 
 # ---------------------------------------------------
 # APPLICATIONS
@@ -101,8 +114,9 @@ ASGI_APPLICATION = "config.asgi.application"
 # ---------------------------------------------------
 # DATABASE
 # ---------------------------------------------------
+use_sqlite = DEBUG or (os.getenv("USE_SQLITE", "").lower() in ("1", "true", "yes"))
 
-if DEBUG:
+if use_sqlite:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
