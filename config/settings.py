@@ -27,34 +27,33 @@ SITE_URL = os.getenv(
 )
 
 # ---------------------------------------------------
-# ALLOWED HOSTS / CSRF (Render gibi geçici domainlerde çalışsın diye)
+# ALLOWED HOSTS / CSRF (Render + gerçek domain)
 # ---------------------------------------------------
 
-# Prod ortamında hangi hostlardan istek kabul edileceği
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+# Render test domainini koda sabitliyoruz (env'e bağlı kalmasın)
+RENDER_HOST = "otoparca-2.onrender.com"
 
-if not DEBUG:
-    # Render / test ortamları için esnek host
-    # (Render URL’in: https://xxx.onrender.com gibi)
-    extra_hosts = os.getenv("ALLOWED_HOSTS", "")
-    if extra_hosts:
-        ALLOWED_HOSTS += [h.strip() for h in extra_hosts.split(",") if h.strip()]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    RENDER_HOST,
+    "umayotoyedekparca.com",
+    "www.umayotoyedekparca.com",
+]
 
-    # Senin gerçek domainlerin
-    ALLOWED_HOSTS += [
-        "umayotoyedekparca.com",
-        "www.umayotoyedekparca.com",
-    ]
+# Admin panel POST işlemleri için (CSRF)
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{RENDER_HOST}",
+    "https://umayotoyedekparca.com",
+    "https://www.umayotoyedekparca.com",
+]
 
-    # CSRF trusted origins (admin post işlemleri için şart)
-    CSRF_TRUSTED_ORIGINS = [
-        "https://umayotoyedekparca.com",
-        "https://www.umayotoyedekparca.com",
-    ]
+# ---------------------------------------------------
+# Proxy / HTTPS (Render gibi reverse proxy arkasında şart)
+# ---------------------------------------------------
 
-    extra_csrf = os.getenv("CSRF_TRUSTED_ORIGINS", "")
-    if extra_csrf:
-        CSRF_TRUSTED_ORIGINS += [o.strip() for o in extra_csrf.split(",") if o.strip()]
+# Render/Nginx gibi proxy arkasında Django'nun HTTPS'yi doğru algılaması için
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # ---------------------------------------------------
 # APPLICATIONS
