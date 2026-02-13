@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Tüm Oto Yedek Parçalar | Umay Oto Yedek Parça{% endblock %}
+{% block meta_desc %}Tüm oto yedek parça ürünleri: OEM kodu, marka/kategori bilgisi ve hızlı WhatsApp iletişimi ile aradığınız parçayı kolayca bulun.{% endblock %}
+
+{% block og_title %}Tüm Oto Yedek Parçalar | Umay Oto Yedek Parça{% endblock %}
+{% block og_desc %}OEM kodu, marka ve kategoriye göre oto yedek parçaları listeleyin. Arama yapın, ürün detaylarını inceleyin, WhatsApp’tan hızlıca bilgi alın.{% endblock %}
+
+{% block content %}
+
+{# Breadcrumb #}
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="{% url 'home' %}">Ana Sayfa</a>
+  <span aria-hidden="true">›</span>
+  <span aria-current="page">Tüm Ürünler</span>
+</nav>
+
+<header class="page-header">
+  <h1 class="page-title">Tüm Ürünler</h1>
+</header>
+
+<form class="search" method="get" role="search" aria-label="Ürün arama">
+  <input
+    name="q"
+    placeholder="OEM / ürün / araç ara…"
+    value="{{ q|default:request.GET.q|default:'' }}"
+    inputmode="search"
+    autocomplete="off"
+  >
+  <button type="submit">Ara</button>
+</form>
+
+<section class="product-grid" aria-label="Tüm ürünler">
+  {% for p in products %}
+    <article class="product-card" itemscope itemtype="https://schema.org/Product">
+      <a href="{% url 'product_detail' p.slug %}" itemprop="url" aria-label="{{ p.name }}">
+        {% if p.image %}
+          <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" itemprop="image">
+        {% endif %}
+        <h2 itemprop="name">{{ p.name }}</h2>
+      </a>
+
+      <div class="meta">
+        <span itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+          <span itemprop="name">{{ p.brand.name }}</span>
+        </span>
+        ·
+        <span>{{ p.category.name }}</span>{% if p.oem_code %} · <span>OEM: <span itemprop="mpn">{{ p.oem_code }}</span></span>{% endif %}
+      </div>
+
+      {% if p.short_desc %}
+        <p class="desc" itemprop="description">{{ p.short_desc|truncatechars:120 }}</p>
+      {% endif %}
+
+      {# WhatsApp Butonu #}
+      {% with product_url=SITE_URL|add:p.get_absolute_url %}
+        <a class="buy"
+           target="_blank"
+           rel="nofollow noopener noreferrer"
+           href="https://wa.me/{{ BUSINESS_WHATSAPP }}?text={{ 'Merhaba, şu ürün hakkında bilgi almak istiyorum: '|add:p.name|add:' '|add:product_url|urlencode }}">
+          WhatsApp ile Sor
+        </a>
+      {% endwith %}
+    </article>
+  {% empty %}
+    <p>Ürün bulunamadı.</p>
+  {% endfor %}
+</section>
+
+{# Pagination (views.py'de page_obj gönderiliyorsa) #}
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Sayfalama">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q|urlencode }}{% endif %}" rel="prev">‹ Önceki</a>
+  {% endif %}
+
+  <span>Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q|urlencode }}{% endif %}" rel="next">Sonraki ›</a>
+  {% endif %}
+</nav>
+{% endif %}
+
+{# SEO içerik bloğu #}
+<section class="seo-content">
+  <h2>Tüm Oto Yedek Parçalar</h2>
+  <p>
+    Oto yedek parça seçerken OEM/parça kodu, uyumluluk ve doğru marka/kategori bilgisi en önemli kriterlerdendir.
+    Bu sayfada tüm ürünleri listeleyebilir, arama alanından OEM kodu veya ürün adıyla hızlıca filtreleyebilirsiniz.
+    Ürün detaylarında OEM kodu ve uyumluluk bilgisini kontrol edebilir, WhatsApp üzerinden hızlıca bilgi alabilirsiniz.
+  </p>
+</section>
+
+{# SEO: WebPage structured data #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Tüm Oto Yedek Parçalar",
+  "url": "{{ SITE_URL }}{% url 'all_products' %}"
+}
+</script>
+
+{% endblock %}

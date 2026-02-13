@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ p.name }} | {{ p.brand.name }} Yedek Parça | Umay Oto Yedek Parça{% endblock %}
+{% block meta_desc %}
+  {% if p.short_desc %}
+    {{ p.short_desc|truncatechars:160 }}
+  {% else %}
+    {{ p.name }} için OEM kodu ve uyumluluk bilgileriyle doğru yedek parçayı bulun. WhatsApp ile hızlı bilgi alın.
+  {% endif %}
+{% endblock %}
+
+{% block og_title %}{{ p.name }} | {{ p.brand.name }}{% endblock %}
+{% block og_desc %}
+  {% if p.short_desc %}
+    {{ p.short_desc|truncatechars:200 }}
+  {% else %}
+    {{ p.name }} için OEM kodu ve uyumluluk bilgileriyle doğru yedek parçayı bulun. WhatsApp’tan hızlıca bilgi alın.
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+{# Breadcrumb #}
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="{% url 'home' %}">Ana Sayfa</a>
+  <span aria-hidden="true">›</span>
+  <a href="{% url 'brand_page' p.brand.slug %}">{{ p.brand.name }} Yedek Parça</a>
+  <span aria-hidden="true">›</span>
+  <span aria-current="page">{{ p.name }}</span>
+</nav>
+
+<article class="product-detail" itemscope itemtype="https://schema.org/Product">
+  <div class="gallery">
+    {% if p.image %}
+      <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" itemprop="image">
+    {% endif %}
+  </div>
+
+  <div class="info">
+    <h1 itemprop="name">{{ p.name }}</h1>
+    <p class="meta">
+      <span itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+        <span itemprop="name">{{ p.brand.name }}</span>
+      </span>
+      ·
+      <span>{{ p.category.name }}</span>
+    </p>
+
+    {% if p.oem_code %}
+      <p><strong>OEM Kodu:</strong> <span itemprop="mpn">{{ p.oem_code }}</span></p>
+    {% endif %}
+
+    {% if p.compatible %}
+      <p><strong>Uyumluluk:</strong> {{ p.compatible }}</p>
+    {% endif %}
+
+    {% if p.short_desc %}
+      <p class="desc" itemprop="description">{{ p.short_desc }}</p>
+    {% endif %}
+
+    {# WhatsApp: SITE_URL + get_absolute_url #}
+    {% with product_url=SITE_URL|add:p.get_absolute_url %}
+      <a class="buy big"
+         target="_blank"
+         rel="nofollow noopener noreferrer"
+         href="https://wa.me/{{ BUSINESS_WHATSAPP }}?text={{ 'Merhaba, şu ürün hakkında bilgi almak istiyorum: '|add:p.name|add:' '|add:product_url|urlencode }}">
+        WhatsApp ile Bilgi Al
+      </a>
+    {% endwith %}
+  </div>
+</article>
+
+{# SEO içerik bloğu #}
+<section class="seo-content">
+  <h2>{{ p.brand.name }} için {{ p.name }}</h2>
+  <p>
+    Bu ürün sayfasında {{ p.brand.name }} araçlar için uygun yedek parça bilgilerini bulabilirsiniz.
+    OEM/parça kodu ve uyumluluk bilgilerini kontrol ederek doğru parçayı seçebilir, emin olmadığınız durumda WhatsApp üzerinden hızlıca bilgi alabilirsiniz.
+  </p>
+</section>
+
+{# JSON-LD Product (absolute URL + güvenli escape) #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ p.name|escapejs }}",
+  "url": "{{ SITE_URL }}{{ p.get_absolute_url }}"{% if p.image %},
+  "image": ["{{ SITE_URL }}{{ p.image.url }}"]{% endif %},
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ p.brand.name|escapejs }}"
+  }{% if p.oem_code %},
+  "mpn": "{{ p.oem_code|escapejs }}"{% endif %}{% if p.short_desc %},
+  "description": "{{ p.short_desc|truncatechars:300|escapejs }}"{% endif %}
+}
+</script>
+
+{% endblock %}

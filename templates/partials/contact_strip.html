@@ -1,0 +1,92 @@
+<section class="contact-strip">
+  <div class="container contact-grid">
+
+    <!-- SOL: Harita -->
+    <div class="map-box">
+      <iframe
+        src="{{ MAP_EMBED_SRC }}"
+        loading="lazy"
+        allowfullscreen
+        title="Harita Konumu - {{ BUSINESS_NAME }}"
+        referrerpolicy="strict-origin-when-cross-origin">
+      </iframe>
+    </div>
+
+    <!-- SAĞ: Bilgiler -->
+    <div class="contact-box">
+      <h3 style="margin-top:0">{{ BUSINESS_NAME }}</h3>
+
+      <ul class="contact-list">
+        <li>
+          <strong>Adres:</strong> {{ BUSINESS_ADDRESS }}
+        </li>
+
+        <li>
+          <strong>Telefon:</strong>
+          <a href="tel:{{ BUSINESS_PHONE|cut:' ' }}">
+            {{ BUSINESS_PHONE }}
+          </a>
+        </li>
+
+        {% if BUSINESS_OWNER %}
+        <li>
+          <strong>Dükkan Sahibi:</strong> {{ BUSINESS_OWNER }}
+        </li>
+        {% endif %}
+
+        {% if BUSINESS_HOURS %}
+        <li>
+          <strong>Çalışma Saatleri:</strong> {{ BUSINESS_HOURS }}
+        </li>
+        {% endif %}
+      </ul>
+
+      <div class="social-links">
+        {% if BUSINESS_WHATSAPP %}
+        <a class="pill"
+           href="https://wa.me/{{ BUSINESS_WHATSAPP }}"
+           target="_blank"
+           rel="noopener noreferrer">
+           WhatsApp
+        </a>
+        {% endif %}
+
+        {% if BUSINESS_INSTAGRAM %}
+        <a class="pill"
+           href="{{ BUSINESS_INSTAGRAM }}"
+           target="_blank"
+           rel="noopener noreferrer">
+           Instagram
+        </a>
+        {% endif %}
+
+        {% if BUSINESS_FACEBOOK %}
+        <a class="pill"
+           href="{{ BUSINESS_FACEBOOK }}"
+           target="_blank"
+           rel="noopener noreferrer">
+           Facebook
+        </a>
+        {% endif %}
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SEO: LocalBusiness Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoPartsStore",
+    "name": "{{ BUSINESS_NAME }}",
+    "url": "{{ SITE_URL }}",
+    "telephone": "{{ BUSINESS_PHONE }}",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "{{ BUSINESS_ADDRESS }}"
+    }
+  }
+  </script>
+
+</section>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}Umay Oto Yedek Parça{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}OEM kodu, marka ve araç modeline göre doğru parçalar.{% endblock %}">
+
+  {% load static %}
+
+  {# CANLI: absolute URL’ler example.com'a gitmesin diye settings.py'deki SITE_URL context processor ile gelir #}
+  <link rel="canonical" href="{{ SITE_URL }}{{ request.path }}">
+
+  {# Open Graph #}
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}Umay Oto Yedek Parça{% endblock %}">
+  <meta property="og:description" content="{% block og_desc %}OEM kodu, marka ve araç modeline göre doğru parçalar.{% endblock %}">
+  <meta property="og:url" content="{{ SITE_URL }}{{ request.path }}">
+  <meta property="og:site_name" content="Umay Oto Yedek Parça">
+
+  {# Twitter #}
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{% block twitter_title %}Umay Oto Yedek Parça{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_desc %}OEM kodu, marka ve araç modeline göre doğru parçalar.{% endblock %}">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'brand/favicon.png' %}">
+
+  {# CANLI: cache-busting için ?v=... ekleyebilirsin (deploy’de statik güncellenmeme sorunlarını azaltır) #}
+  <link rel="stylesheet" href="{% static 'styles.css' %}?v=1">
+</head>
+
+<body>
+  <div class="site-wrapper">
+
+    <!-- NAV -->
+    <nav class="nav">
+      <div class="container nav-inner">
+
+        <!-- LOGO + TEXT -->
+        <a class="brand" href="{% url 'home' %}">
+          <img class="brand-logo"
+               src="{% static 'brand/logo.jpg' %}"
+               alt="Umay Oto Yedek Parça"
+               loading="lazy">
+          <span class="brand-text">Umay Oto Yedek Parça</span>
+        </a>
+
+        <div class="links">
+          <a href="{% url 'home' %}">Ana Sayfa</a>
+          <a href="{% url 'all_products' %}">Ürünler</a>
+        </div>
+
+      </div>
+    </nav>
+
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+
+    <div class="below-main">
+      {% block below_main %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <small>© {% now "Y" %} Umay Oto Yedek Parça • Tüm hakları saklıdır.</small>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

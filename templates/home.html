@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Aracınız İçin Doğru Parçalar | Umay Oto Yedek Parça{% endblock %}
+{% block meta_desc %}OEM kodu, marka ve araç modeline göre doğru yedek parçayı bulun. Markanızı seçin, ürünleri inceleyin ve WhatsApp’tan hızlıca bilgi alın.{% endblock %}
+
+{% block og_title %}Aracınız İçin En Doğru Parçalar | Umay Oto Yedek Parça{% endblock %}
+{% block og_desc %}OEM kodu ve uyumluluk bilgisiyle doğru yedek parçayı bulun. Markanızı seçin, ürünleri inceleyin, WhatsApp’tan hızlıca sorun.{% endblock %}
+
+{% block content %}
+<section class="hero" aria-label="Ana tanıtım">
+  <h1>Aracınız İçin En Doğru Parçalar</h1>
+  <p>Markanı seçerek keşfetmeye başla</p>
+</section>
+
+<section class="brand-grid" aria-label="Markalar">
+  {% for b in brands %}
+    <a class="brand-card" href="{% url 'brand_page' b.slug %}" aria-label="{{ b.name }} yedek parçaları">
+      {% if b.logo %}
+        <img src="{{ b.logo.url }}" alt="{{ b.name }} logosu" loading="lazy">
+      {% else %}
+        <div class="brand-fallback" aria-hidden="true">{{ b.name|first|upper }}</div>
+      {% endif %}
+      <div class="brand-name">{{ b.name }}</div>
+    </a>
+  {% empty %}
+    <p>Henüz ürün girilmedi.</p>
+  {% endfor %}
+</section>
+
+{# SEO: WebSite + SearchAction (site içi arama desteği) #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Umay Oto Yedek Parça",
+  "url": "{{ SITE_URL }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ SITE_URL }}{% url 'all_products' %}?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{% endblock %}
+
+{% block below_main %}
+  {% include "partials/contact_strip.html" %}
+{% endblock %}
